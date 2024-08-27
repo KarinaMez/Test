@@ -57,7 +57,7 @@ public class MtsAutotest {
     public void testBlockTitle() {
         try {
             WebElement blockTitle = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//section/div/h2")));
-            assertEquals("Онлайн пополнение без комиссии", blockTitle.getText(), "Название блока не совпадает");
+            assertEquals("Онлайн пополнение\n" + "без комиссии", blockTitle.getText(), "Название блока не совпадает");
         } catch (Exception e) {
             throw new AssertionError("Не удалось найти элемент блока с названием", e);
         }
@@ -67,13 +67,44 @@ public class MtsAutotest {
     @Test
     public void testPaymentSystemLogos() {
         try {
-            List<WebElement> logos = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector(".payment-systems img")));
+            List<WebElement> logos = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//*[@id=\"pay-section\"]/div/div/div[2]/section/div/div[2]/ul")));
             assertTrue(logos.size() > 0, "Логотипы платёжных систем должны быть видны");
         } catch (Exception e) {
             throw new AssertionError("Не удалось найти логотипы платёжных систем", e);
         }
+
+    }
+
+
+    @Test
+    public void testMoreInfoLink() {
+        try {
+            WebElement moreInfoLink = wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Подробнее о сервисе")));
+            moreInfoLink.click();
+
+            String expectedUrlPart = "https://www.mts.by/help/poryadok-oplaty-i-bezopasnost-internet-platezhey/";
+            wait.until(ExpectedConditions.urlContains(expectedUrlPart));
+            assertTrue(driver.getCurrentUrl().contains(expectedUrlPart), "Должна открыться страница с информацией о сервисе");
+        } catch (Exception e) {
+            throw new AssertionError("Не удалось проверить ссылку «Подробнее о сервисе»", e);
+        }
+    }
+
+    @Test
+    public void testServicePayment() {
+        try {
+            WebElement phoneNumberField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"connection-phone\"]")));
+            phoneNumberField.sendKeys("297777777");
+
+            WebElement continueButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id=\"pay-connection\"]/button")));
+            continueButton.click();
+
+        } catch (Exception e) {
+            throw new AssertionError("Не удалось проверить процесс оплаты услуги", e);
+        }
     }
 }
+
 
 
 
