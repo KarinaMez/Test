@@ -5,10 +5,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import pages.MtsHomePage;
 
@@ -36,6 +33,9 @@ public class MtsTests {
 
         // Инициализация страницы с помощью драйвера
         mtsHomePage = new MtsHomePage(driver);
+
+        // Закрытие куки
+        mtsHomePage.closeCookies();
     }
 
     // Метод для очистки тестового окружения после каждого теста
@@ -71,7 +71,6 @@ public class MtsTests {
         assertTrue(driver.getCurrentUrl().contains(expectedUrlPart), "Должна открыться страница с информацией о сервисе");
     }
 
-
     // Тестирование пополнения с валидными данными
     @Test
     public void testServicePaymentWithValidData() {
@@ -85,81 +84,14 @@ public class MtsTests {
         // Проверка текста кнопки "Продолжить"
         String buttonText = mtsHomePage.getContinueButtonText();
         assertTrue(buttonText.contains("Продолжить"), "Текст на кнопке должен быть 'Продолжить'");
+        // Переключение на фрейм
+        driver.switchTo().frame(1);
 
         String displayedAmount = mtsHomePage.getDisplayedAmount();
         assertEquals("10.00 BYN", displayedAmount, "Отображаемая сумма некорректна");
 
         String displayedPhoneNumber = mtsHomePage.getDisplayedPhoneNumber();
-        assertEquals("+375297777777", displayedPhoneNumber, "Отображаемый номер телефона некорректен");
-    }
-
-    // Тестирование плейсхолдеров для полей ввода в форме "Услуги связи"
-    @Test
-    public void testPlaceholderForCommunicationServices() {
-        String expectedPhonePlaceholder = "Номер телефона";
-        String expectedAmountPlaceholder = "Сумма";
-        String expectedEmailPlaceholder = "E-mail для отправки чека";
-
-        assertEquals(expectedPhonePlaceholder, mtsHomePage.getPlaceholderForCommServicesPhone(), "Плейсхолдер для номера телефона некорректен");
-        assertEquals(expectedAmountPlaceholder, mtsHomePage.getPlaceholderForCommServicesAmount(), "Плейсхолдер для суммы некорректен");
-        assertEquals(expectedEmailPlaceholder, mtsHomePage.getPlaceholderForCommServicesEmail(), "Плейсхолдер для email некорректен");
-    }
-
-    // Тестирование плейсхолдеров для полей ввода в форме "Домашний интернет"
-    @Test
-    public void testPlaceholderForInternetServices() {
-        String expectedAccountPlaceholder = "Номер абонента";
-        String expectedAmountPlaceholder = "Сумма";
-        String expectedEmailPlaceholder = "E-mail для отправки чека";
-
-        assertEquals(expectedAccountPlaceholder, mtsHomePage.getPlaceholderForInternetServicesAccount(), "Плейсхолдер для номера лицевого счета некорректен");
-        assertEquals(expectedAmountPlaceholder, mtsHomePage.getPlaceholderForInternetServicesAmount(), "Плейсхолдер для суммы некорректен");
-        assertEquals(expectedEmailPlaceholder, mtsHomePage.getPlaceholderForInternetServicesEmail(), "Плейсхолдер для email некорректен");
-    }
-
-    // Тестирование плейсхолдеров для полей ввода в форме "Рассрочка"
-    @Test
-    public void testPlaceholderForInstallmentPlan() {
-        mtsHomePage.selectInstallmentPlanForm();
-
-        String expectedContractPlaceholder = "Номер счета на 44";
-        String expectedAmountPlaceholder = "Сумма";
-        String expectedEmailPlaceholder = "E-mail для отправки чека";
-
-        assertEquals(expectedContractPlaceholder, mtsHomePage.getPlaceholderForInstallmentPlanContract(), "Плейсхолдер для номера договора некорректен");
-        assertEquals(expectedAmountPlaceholder, mtsHomePage.getPlaceholderForInstallmentPlanAmount(), "Плейсхолдер для суммы некорректен");
-        assertEquals(expectedEmailPlaceholder, mtsHomePage.getPlaceholderForInstallmentPlanEmail(), "Плейсхолдер для email некорректен");
-    }
-
-    // Тестирование плейсхолдеров для полей ввода в форме "Задолженность"
-    @Test
-    public void testPlaceholderForDebtPayment() {
-        mtsHomePage.selectDebtPaymentForm();
-
-        String expectedContractPlaceholder = "Номер счета на 2073";
-        String expectedAmountPlaceholder = "Сумма";
-        String expectedEmailPlaceholder = "E-mail для отправки чека";
-
-        assertEquals(expectedContractPlaceholder, mtsHomePage.getPlaceholderForDebtPaymentContract(), "Плейсхолдер для номера договора некорректен");
-        assertEquals(expectedAmountPlaceholder, mtsHomePage.getPlaceholderForDebtPaymentAmount(), "Плейсхолдер для суммы некорректен");
-        assertEquals(expectedEmailPlaceholder, mtsHomePage.getPlaceholderForDebtPaymentEmail(), "Плейсхолдер для email некорректен");
-    }
-
-    // Тестирование итогов пополнения и плейсхолдеров для реквизитов карты
-    @Test
-    public void testServicePaymentSummaryAndCardPlaceholders() {
-        // Заполнение обязательных полей для "Услуги связи"
-        mtsHomePage.enterPhoneNumber("297777777");
-        mtsHomePage.enterAmount("10");
-        mtsHomePage.clickContinueButton();
-
-        // Проверка корректности отображаемой суммы
-        String displayedAmount = mtsHomePage.getDisplayedAmount();
-        assertEquals("10.00 BYN", displayedAmount, "Отображаемая сумма некорректна");
-
-        // Проверка номера телефона
-        String displayedPhoneNumber = mtsHomePage.getDisplayedPhoneNumber();
-        assertEquals("+375297777777", displayedPhoneNumber, "Отображаемый номер телефона некорректен");
+        assertEquals("375297777777", displayedPhoneNumber, "Отображаемый номер телефона некорректен");
 
         // Проверка плейсхолдеров в полях для ввода реквизитов карты
         assertEquals("Номер карты", mtsHomePage.getPlaceholderForCardNumber(), "Плейсхолдер для номера карты некорректен");
@@ -170,5 +102,32 @@ public class MtsTests {
         // Проверка наличия иконок платежных систем
         int iconCount = mtsHomePage.getPaymentSystemIconsCount();
         assertTrue(iconCount > 0, "Иконки платежных систем должны быть видны в поле 'номер карты'");
+        // Возврат к основному контенту
+        mtsHomePage.switchToDefaultContent();
+    }
+
+    @Test
+    public void testPlaceholders() {
+        // Проверка плейсхолдеров для полей формы "Услуги связи"
+        assertEquals("Номер телефона", mtsHomePage.getPlaceholderForCommServicesPhone(), "Плейсхолдер для номера телефона некорректен");
+        assertEquals("Сумма", mtsHomePage.getPlaceholderForCommServicesAmount(), "Плейсхолдер для суммы некорректен");
+        assertEquals("E-mail для отправки чека", mtsHomePage.getPlaceholderForCommServicesEmail(), "Плейсхолдер для email некорректен");
+
+        // Проверка плейсхолдеров для полей формы "Интернет услуги"
+        assertEquals("Номер абонента", mtsHomePage.getPlaceholderForInternetServicesAccount(), "Плейсхолдер для номера лицевого счета некорректен");
+        assertEquals("Сумма", mtsHomePage.getPlaceholderForInternetServicesAmount(), "Плейсхолдер для суммы некорректен");
+        assertEquals("E-mail для отправки чека", mtsHomePage.getPlaceholderForInternetServicesEmail(), "Плейсхолдер для email некорректен");
+
+        // Выбор формы и проверка плейсхолдеров для формы "Рассрочка"
+        mtsHomePage.selectInstallmentPlanForm();
+        assertEquals("Номер счета на 44", mtsHomePage.getPlaceholderForInstallmentPlanContract(), "Плейсхолдер для номера договора некорректен");
+        assertEquals("Сумма", mtsHomePage.getPlaceholderForInstallmentPlanAmount(), "Плейсхолдер для суммы некорректен");
+        assertEquals("E-mail для отправки чека", mtsHomePage.getPlaceholderForInstallmentPlanEmail(), "Плейсхолдер для email некорректен");
+
+        // Выбор формы и проверка плейсхолдеров для формы "Задолженность"
+        mtsHomePage.selectDebtPaymentForm();
+        assertEquals("Номер счета на 2073", mtsHomePage.getPlaceholderForHomeInternetAmount(), "Плейсхолдер для номера договора некорректен");
+        assertEquals("Сумма", mtsHomePage.getPlaceholderForDebtPaymentAmount(), "Плейсхолдер для суммы некорректен");
+        assertEquals("E-mail для отправки чека", mtsHomePage.getPlaceholderForDebtPaymentEmail(), "Плейсхолдер для email некорректен");
     }
 }

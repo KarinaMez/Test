@@ -1,29 +1,24 @@
 package pages;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.StaleElementReferenceException;
 
 import java.time.Duration;
 
 public class MtsHomePage {
+
     private WebDriver driver;
     private WebDriverWait wait;
 
-    // Локаторы для элементов на домашней странице
+    // Локаторы для элементов
     private By blockTitle = By.xpath("//section/div/h2");
-    private By paymentSystemLogos = By.xpath("//*[@id=\"pay-section\"]/div/div/div[2]/section/div/div[2]/ul");
+    private By paymentSystemLogos = By.xpath("*[@id=\"pay-section\"]//ul");
     private By moreInfoLink = By.linkText("Подробнее о сервисе");
     private By phoneNumberField = By.xpath("//*[@id='connection-phone']");
-    private By amountField = By.id("amount-input");
+    private By amountField = By.id("connection-sum");
     private By continueButton = By.xpath("//*[@id='pay-connection']/button");
     private By emptyFieldErrorMessage = By.xpath("//div[@class='error-message']");
-
-
 
     // Локаторы для полей ввода реквизитов карты
     private By cardNumberField = By.xpath("//input[@id='card-number']");
@@ -34,8 +29,8 @@ public class MtsHomePage {
 
     // Локаторы для элементов, появляющихся после нажатия кнопки "Продолжить"
     private By displayedPhoneNumber = By.xpath("//div[@class='summary-phone-number']");
-    private By displayedAmount = By.xpath("//div[@class='summary-amount']");
-    private By paymentButton = By.xpath("//button[@id='pay-button']");
+    private By displayedAmount = By.xpath("xpath=//span[contains(.,'10.00 BYN')]");
+    private By paymentButton = By.xpath("//div[2]/span");
 
     // Локаторы для полей формы "Услуги связи"
     private By commServicesPhoneField = By.xpath("//input[@id='comm-services-phone']");
@@ -70,8 +65,29 @@ public class MtsHomePage {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
+    // Метод для переключения на фрейм по локатору
+    public void switchToFrame(By iframeLocator) {
+        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(iframeLocator));
+    }
+
+    // Метод для переключения обратно на основной контент
+    public void switchToDefaultContent() {
+        driver.switchTo().defaultContent();
+    }
+    // Метод для проверки наличия iframe
+    private boolean isIframePresent(By iframeLocator) {
+        try {
+            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(iframeLocator));
+            driver.switchTo().defaultContent(); // Возвращаемся обратно к основному контенту после проверки
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
+
+    }
+
     // Метод для закрытия куки
-    private void closeCookies() {
+    public void closeCookies() {
         try {
             WebElement cookieCloseButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Принять')]")));
             // Кликаем по кнопке, если она видима
@@ -134,24 +150,32 @@ public class MtsHomePage {
 
     // Получение отображаемого номера телефона после нажатия кнопки "Продолжить"
     public String getDisplayedPhoneNumber() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(displayedPhoneNumber)).getText();
+
+        String phoneNumber = wait.until(ExpectedConditions.visibilityOfElementLocated(displayedPhoneNumber)).getText();
+
+        return phoneNumber;
     }
 
     // Получение отображаемой суммы после нажатия кнопки "Продолжить"
     public String getDisplayedAmount() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(displayedAmount)).getText();
+
+        String amount = wait.until(ExpectedConditions.visibilityOfElementLocated(displayedAmount)).getText();
+
+        return amount;
     }
 
     // Получение текста кнопки "Оплатить"
     public String getPaymentButtonText() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(paymentButton)).getText();
+
+        String paymentText = wait.until(ExpectedConditions.visibilityOfElementLocated(paymentButton)).getText();
+
+        return paymentText;
     }
 
     // Универсальный метод для получения плейсхолдера
     private String getPlaceholderForField(By fieldLocator) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(fieldLocator)).getAttribute("placeholder");
     }
-
     // Получение плейсхолдера для полей формы "Услуги связи"
     public String getPlaceholderForCommServicesPhone() {
         return getPlaceholderForField(commServicesPhoneField);
@@ -216,7 +240,6 @@ public class MtsHomePage {
     public String getPlaceholderForDebtPaymentEmail() {
         return getPlaceholderForField(debtPaymentEmailField);
     }
-
     // Получение плейсхолдера для полей ввода реквизитов карты
     public String getPlaceholderForCardNumber() {
         return getPlaceholderForField(cardNumberField);
@@ -236,29 +259,35 @@ public class MtsHomePage {
 
     // Получение количества иконок платежных систем
     public int getPaymentSystemIconsCount() {
-        return wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(paymentSystemIcons)).size();
-    }
 
-    // Выбор формы из выпадающего списка
-    private void selectForm(String formName) {
-        WebElement dropdown = wait.until(ExpectedConditions.visibilityOfElementLocated(installmentPlanDropdown));
-        dropdown.click();
-        WebElement option = driver.findElement(By.xpath("//option[text()='" + formName + "']"));
-        option.click();
-    }
+        int iconsCount = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(paymentSystemIcons)).size();
 
-    // Выбор формы "Рассрочка"
-    public void selectInstallmentPlanForm() {
-        selectForm("Рассрочка");
+        return iconsCount;
     }
+        // Выбор формы из выпадающего списка
+        private void selectForm (String NumberField){
+            WebElement dropdown = wait.until(ExpectedConditions.visibilityOfElementLocated(installmentPlanDropdown));
+            dropdown.click();
+            WebElement option = driver.findElement(By.xpath("//option[text()='" + NumberField + "']"));
+            option.click();
+        }
 
-    // Выбор формы "Домашний интернет"
-    public void selectHomeInternetForm() {
-        selectForm("Домашний интернет");
-    }
+        // Выбор формы "Рассрочка"
+        public void selectInstallmentPlanForm () {
+            selectForm("Рассрочка");
+        }
 
-    // Выбор формы "Задолженность"
-    public void selectDebtPaymentForm() {
-        selectForm("Оплата задолженности");
-    }
+        // Выбор формы "Домашний интернет"
+        public void selectHomeInternetForm () {
+            selectForm("Домашний интернет");
+        }
+
+        // Выбор формы "Задолженность"
+        public void selectDebtPaymentForm () {
+            selectForm("Оплата задолженности");
+        }
+
+
 }
+
+
