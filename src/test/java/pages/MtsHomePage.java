@@ -264,30 +264,29 @@ public class MtsHomePage {
 
         return iconsCount;
     }
-        // Выбор формы из выпадающего списка
-        private void selectForm (String NumberField){
-            WebElement dropdown = wait.until(ExpectedConditions.visibilityOfElementLocated(installmentPlanDropdown));
-            dropdown.click();
-            WebElement option = driver.findElement(By.xpath("//option[text()='" + NumberField + "']"));
-            option.click();
-        }
+    // Выбор формы из выпадающего списка
+    private void selectForm (String NumberField){
+        WebElement dropdown = wait.until(ExpectedConditions.visibilityOfElementLocated(installmentPlanDropdown));
+        dropdown.click();
+        WebElement option = driver.findElement(By.xpath("//option[text()='" + NumberField + "']"));
+        option.click();
+    }
 
-        // Выбор формы "Рассрочка"
-        public void selectInstallmentPlanForm () {
-            selectForm("Рассрочка");
-        }
+    // Выбор формы "Рассрочка"
+    public void selectInstallmentPlanForm () {
+        selectForm("Рассрочка");
+    }
 
-        // Выбор формы "Домашний интернет"
-        public void selectHomeInternetForm () {
-            selectForm("Домашний интернет");
-        }
+    // Выбор формы "Домашний интернет"
+    public void selectHomeInternetForm () {
+        selectForm("Домашний интернет");
+    }
 
-        // Выбор формы "Задолженность"
-        public void selectDebtPaymentForm () {
-            selectForm("Оплата задолженности");
-        }
+    // Выбор формы "Задолженность"
+    public void selectDebtPaymentForm () {
+        selectForm("Оплата задолженности");
+    }
 
 
 }
-
 
