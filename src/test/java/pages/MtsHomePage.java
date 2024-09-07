@@ -8,67 +8,71 @@ import io.qameta.allure.Step;
 
 public class MtsHomePage {
 
-    private WebDriver driver;
-    private WebDriverWait wait;
+    private final WebDriver driver;
+    private final WebDriverWait wait;
 
     // Локаторы для элементов
-    private By blockTitle = By.xpath("//section/div/h2");
-    private By paymentSystemLogos = By.xpath("//*[@id=\"pay-section\"]//ul");
-    private By moreInfoLink = By.linkText("Подробнее о сервисе");
-    private By phoneNumberField = By.xpath("//*[@id='connection-phone']");
-    private By amountField = By.id("connection-sum");
-    private By continueButton = By.xpath("//*[@id='pay-connection']/button");
-    private By emptyFieldErrorMessage = By.xpath("//div[@class='error-message']");
+    private final By blockTitle = By.xpath("//section/div/h2");
+    private final By paymentSystemLogos = By.xpath("*//section/div/div[2]/ul");
+    private final By moreInfoLink = By.linkText("Подробнее о сервисе");
+    private final By phoneNumberField = By.xpath("//*[@id='connection-phone']");
+    private final By amountField = By.id("connection-sum");
+    private final By continueButton = By.xpath("//*[@id='pay-connection']/button");
+    private final By emptyFieldErrorMessage = By.xpath("//div[@class='error-message']");
+    // Локатор iframe
+    private final By iFrame = By.xpath(".//iframe[@class='bepaid-iframe']");
 
     // Локаторы для полей ввода реквизитов карты
-    private By cardNumberField = By.xpath("//input[@id='card-number']");
-    private By cardExpiryField = By.xpath("//input[@id='card-expiry']");
-    private By cardCVCField = By.xpath("//input[@id='card-cvc']");
-    private By cardHolderNameField = By.xpath("//input[@id='card-holder-name']");
-    private By paymentSystemIcons = By.xpath("//div[@class='card-icons']/img");
+    private final By cardNumberLabel = By.xpath("//label[text()='Номер карты']");
+    private final By cardExpiryLabel = By.xpath("//label[text()='Срок действия']");
+    private final By cardCVCLabel = By.xpath("//label[text()='CVC']");
+    private final By cardHolderNameLabel = By.xpath("//label[text()='Имя держателя (как на карте)']");
+    private final By paymentSystemIcons = By.xpath("(//input[@value=''])[4]");
 
     // Локаторы для элементов, появляющихся после нажатия кнопки "Продолжить"
-    private By displayedPhoneNumber = By.xpath("//div[@class='summary-phone-number']");
-    private By displayedAmount = By.xpath("xpath=//span[contains(.,'10.00 BYN')]");
-    private By paymentButton = By.xpath("//div[2]/span");
+    private final By displayedPhoneNumber = By.xpath("//div[@class='pay-description__text']/span[contains(text(), 'Оплата: Услуги связи')]");
+    private final By displayedAmount = By.xpath("//span[contains(text(), '10.00 BYN')]");
+    private final By paymentButton = By.xpath("//div[2]/span");
 
     // Локаторы для полей формы "Услуги связи"
-    private By commServicesPhoneField = By.xpath("//input[@id='comm-services-phone']");
-    private By commServicesAmountField = By.xpath("//input[@id='comm-services-amount']");
-    private By commServicesEmailField = By.xpath("//input[@id='comm-services-email']");
-
-    // Локаторы для полей формы "Интернет услуги"
-    private By internetServicesAccountField = By.xpath("//input[@id='internet-services-account']");
-    private By internetServicesAmountField = By.xpath("//input[@id='internet-services-amount']");
-    private By internetServicesEmailField = By.xpath("//input[@id='internet-services-email']");
-
-    // Локаторы для полей формы "Рассрочка"
-    private By installmentPlanDropdown = By.xpath("//select[@id='form-selector']");
-    private By installmentPlanOption = By.xpath("//option[text()='Рассрочка']");
-    private By installmentPlanContractField = By.xpath("//input[@id='installment-plan-contract']");
-    private By installmentPlanAmountField = By.xpath("//input[@id='installment-plan-amount']");
-    private By installmentPlanEmailField = By.xpath("//input[@id='installment-plan-email']");
+    private final By commServicesPhoneField = By.xpath("//input[@id='connection-phone']");
+    private final By commServicesAmountField = By.xpath("//input[@id='connection-sum']");
+    private final By commServicesEmailField = By.xpath("//input[@id='connection-email']");
 
     // Локаторы для полей формы "Домашний интернет"
-    private By homeInternetOption = By.xpath("//option[text()='Домашний интернет']");
-    private By homeInternetAccountField = By.xpath("//input[@id='home-internet-account']");
-    private By homeInternetAmountField = By.xpath("//input[@id='home-internet-amount']");
-    private By homeInternetEmailField = By.xpath("//input[@id='home-internet-email']");
+    private final By homeInternetOption = By.cssSelector(".select__item:nth-child(2) .select__option");
+    private final By internetServicesAccountField = By.xpath("//input[@id='internet-phone']");
+    private final By internetServicesAmountField = By.xpath("//input[@id='internet-sum']");
+    private final By internetServicesEmailField = By.xpath("//input[@id='internet-email']");
+
+    // Локатор выпадающего списка
+    private final By installmentPlanDropdown = By.xpath("//section/div/div/div/div[2]/button");
+
+    // Локаторы для полей формы "Рассрочка"
+    private final By installmentPlanOption = By.cssSelector(".select__item:nth-child(3) .select__option");
+    private final By installmentPlanContractField = By.xpath("//input[@id='score-instalment']");
+    private final By installmentPlanAmountField = By.xpath("//input[@id='instalment-sum']");
+    private final By installmentPlanEmailField = By.xpath("//input[@id='instalment-email']");
 
     // Локаторы для полей формы "Оплата задолженности"
-    private By debtPaymentOption = By.xpath("//option[text()='Оплата задолженности']");
-    private By debtPaymentContractField = By.xpath("//input[@id='debt-payment-contract']");
-    private By debtPaymentAmountField = By.xpath("//input[@id='debt-payment-amount']");
-    private By debtPaymentEmailField = By.xpath("//input[@id='debt-payment-email']");
+    private final By debtPaymentOption = By.cssSelector(".select__item:nth-child(4) .select__option");
+    private final By debtPaymentContractField = By.xpath("//input[@id='score-arrears']");
+    private final By debtPaymentAmountField = By.xpath("//input[@id='arrears-sum']");
+    private final By debtPaymentEmailField = By.xpath("//input[@id='arrears-email']");
 
     public MtsHomePage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    @Step("Переключение на iframe по локатору {iframeLocator}")
-    public void switchToFrame(By iframeLocator) {
-        wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(iframeLocator));
+    @Step("Переключение на iframe по локатору")
+    public void switchToFrame() {
+        try {
+            WebElement iframeElement = wait.until(ExpectedConditions.presenceOfElementLocated(iFrame));
+            driver.switchTo().frame(iframeElement);
+        } catch (TimeoutException e) {
+            System.out.println("Не удалось найти iframe в течение ожидаемого времени.");
+        }
     }
 
     @Step("Возвращение к основному контенту")
@@ -76,16 +80,7 @@ public class MtsHomePage {
         driver.switchTo().defaultContent();
     }
 
-    @Step("Проверка наличия iframe")
-    private boolean isIframePresent(By iframeLocator) {
-        try {
-            wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(iframeLocator));
-            driver.switchTo().defaultContent(); // Возвращаемся обратно к основному контенту после проверки
-            return true;
-        } catch (TimeoutException e) {
-            return false;
-        }
-    }
+
 
     @Step("Закрытие баннера с куки")
     public void closeCookies() {
@@ -184,17 +179,17 @@ public class MtsHomePage {
         return getPlaceholderForField(commServicesEmailField);
     }
 
-    @Step("Получение плейсхолдера для лицевого счёта в форме 'Интернет услуги'")
+    @Step("Получение плейсхолдера номера телефона в форме 'Домашний интернет'")
     public String getPlaceholderForInternetServicesAccount() {
         return getPlaceholderForField(internetServicesAccountField);
     }
 
-    @Step("Получение плейсхолдера для суммы в форме 'Интернет услуги'")
+    @Step("Получение плейсхолдера для суммы в форме 'Домашний интернет'")
     public String getPlaceholderForInternetServicesAmount() {
         return getPlaceholderForField(internetServicesAmountField);
     }
 
-    @Step("Получение плейсхолдера для email в форме 'Интернет услуги'")
+    @Step("Получение плейсхолдера для email в форме 'Домашний интернет'")
     public String getPlaceholderForInternetServicesEmail() {
         return getPlaceholderForField(internetServicesEmailField);
     }
@@ -214,21 +209,6 @@ public class MtsHomePage {
         return getPlaceholderForField(installmentPlanEmailField);
     }
 
-    @Step("Получение плейсхолдера для лицевого счёта в форме 'Домашний интернет'")
-    public String getPlaceholderForHomeInternetAccount() {
-        return getPlaceholderForField(homeInternetAccountField);
-    }
-
-    @Step("Получение плейсхолдера для суммы в форме 'Домашний интернет'")
-    public String getPlaceholderForHomeInternetAmount() {
-        return getPlaceholderForField(homeInternetAmountField);
-    }
-
-    @Step("Получение плейсхолдера для email в форме 'Домашний интернет'")
-    public String getPlaceholderForHomeInternetEmail() {
-        return getPlaceholderForField(homeInternetEmailField);
-    }
-
     @Step("Получение плейсхолдера для договора в форме 'Оплата задолженности'")
     public String getPlaceholderForDebtPaymentContract() {
         return getPlaceholderForField(debtPaymentContractField);
@@ -242,6 +222,14 @@ public class MtsHomePage {
     @Step("Получение плейсхолдера для email в форме 'Оплата задолженности'")
     public String getPlaceholderForDebtPaymentEmail() {
         return getPlaceholderForField(debtPaymentEmailField);
+    }
+
+    @Step("Выбор формы 'Оплата задолженности'")
+    public void selectPaymentForm() {
+        WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(installmentPlanDropdown));
+        dropdown.click();
+        WebElement option = wait.until(ExpectedConditions.elementToBeClickable(homeInternetOption));
+        option.click();
     }
 
     @Step("Выбор формы 'Рассрочка'")
@@ -259,25 +247,24 @@ public class MtsHomePage {
         WebElement option = wait.until(ExpectedConditions.elementToBeClickable(debtPaymentOption));
         option.click();
     }
-
-    @Step("Получение плейсхолдера для поля номера карты")
-    public String getPlaceholderForCardNumber() {
-        return getPlaceholderForField(cardNumberField);
+    @Step("Получение текста метки для номера карты")
+    public String getCardNumberLabelText() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(cardNumberLabel)).getText();
     }
 
-    @Step("Получение плейсхолдера для поля срока действия карты")
-    public String getPlaceholderForCardExpiry() {
-        return getPlaceholderForField(cardExpiryField);
+    @Step("Получение текста метки для срока действия карты")
+    public String getCardExpiryLabelText() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(cardExpiryLabel)).getText();
     }
 
-    @Step("Получение плейсхолдера для поля CVC карты")
-    public String getPlaceholderForCardCVC() {
-        return getPlaceholderForField(cardCVCField);
+    @Step("Получение текста метки для CVC карты")
+    public String getCardCVCLabelText() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(cardCVCLabel)).getText();
     }
 
-    @Step("Получение плейсхолдера для поля имени держателя карты")
-    public String getPlaceholderForCardHolderName() {
-        return getPlaceholderForField(cardHolderNameField);
+    @Step("Получение текста метки для имени держателя карты")
+    public String getCardHolderNameLabelText() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(cardHolderNameLabel)).getText();
     }
 
     @Step("Получение количества иконок платёжных систем в поле номера карты")

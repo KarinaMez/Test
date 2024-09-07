@@ -1,12 +1,16 @@
 package tests;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import pages.MtsHomePage;
 import static org.junit.jupiter.api.Assertions.*;
 import io.qameta.allure.*;
+
+import java.time.Duration;
 
 
 public class MtsTests {
@@ -16,9 +20,22 @@ public class MtsTests {
 
     @BeforeEach
     public void setUp() {
-        // настройка драйвера и начальные действия
-    }
+        // Установка и запуск драйвера Chrome
+        WebDriverManager.chromedriver().setup();
+        driver = new ChromeDriver();
+        // Установка ожидания в 10 секунд
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        // Максимизация окна браузера
+        driver.manage().window().maximize();
+        // Открытие страницы для тестирования
+        driver.get("https://mts.by");
 
+        // Инициализация страницы с помощью драйвера
+        mtsHomePage = new MtsHomePage(driver);
+
+        // Закрытие куки
+        mtsHomePage.closeCookies();
+    }
     @AfterEach
     public void tearDown() {
         if (driver != null) {
@@ -70,13 +87,13 @@ public class MtsTests {
         mtsHomePage.enterAmount("10");
         mtsHomePage.clickContinueButton();
         assertTrue(mtsHomePage.getContinueButtonText().contains("Продолжить"), "Текст на кнопке должен быть 'Продолжить'");
-        driver.switchTo().frame(1);
+        mtsHomePage.switchToFrame();
         assertEquals("10.00 BYN", mtsHomePage.getDisplayedAmount(), "Отображаемая сумма некорректна");
-        assertEquals("375297777777", mtsHomePage.getDisplayedPhoneNumber(), "Отображаемый номер телефона некорректен");
-        assertEquals("Номер карты", mtsHomePage.getPlaceholderForCardNumber(), "Плейсхолдер для номера карты некорректен");
-        assertEquals("Срок действия", mtsHomePage.getPlaceholderForCardExpiry(), "Плейсхолдер для срока действия карты некорректен");
-        assertEquals("CVC", mtsHomePage.getPlaceholderForCardCVC(), "Плейсхолдер для CVC некорректен");
-        assertEquals("Имя держателя (как на карте)", mtsHomePage.getPlaceholderForCardHolderName(), "Плейсхолдер для имени держателя карты некорректен");
+        assertEquals("Оплата: Услуги связи Номер:375297777777", mtsHomePage.getDisplayedPhoneNumber(), "Отображаемый номер телефона некорректен");
+        assertEquals("Номер карты", mtsHomePage.getCardNumberLabelText(), "Текст для номера карты некорректен");
+        assertEquals("Срок действия", mtsHomePage.getCardExpiryLabelText(), "Текст для срока действия карты некорректен");
+        assertEquals("CVC", mtsHomePage.getCardCVCLabelText(), "Текст для CVC некорректен");
+        assertEquals("Имя держателя (как на карте)", mtsHomePage.getCardHolderNameLabelText(), "Текст для имени держателя карты некорректен");
         assertTrue(mtsHomePage.getPaymentSystemIconsCount() > 0, "Иконки платежных систем должны быть видны в поле 'номер карты'");
         mtsHomePage.switchToDefaultContent();
     }
@@ -91,6 +108,7 @@ public class MtsTests {
         assertEquals("Номер телефона", mtsHomePage.getPlaceholderForCommServicesPhone(), "Плейсхолдер для номера телефона некорректен");
         assertEquals("Сумма", mtsHomePage.getPlaceholderForCommServicesAmount(), "Плейсхолдер для суммы некорректен");
         assertEquals("E-mail для отправки чека", mtsHomePage.getPlaceholderForCommServicesEmail(), "Плейсхолдер для email некорректен");
+        mtsHomePage.selectPaymentForm();
         assertEquals("Номер абонента", mtsHomePage.getPlaceholderForInternetServicesAccount(), "Плейсхолдер для номера лицевого счета некорректен");
         assertEquals("Сумма", mtsHomePage.getPlaceholderForInternetServicesAmount(), "Плейсхолдер для суммы некорректен");
         assertEquals("E-mail для отправки чека", mtsHomePage.getPlaceholderForInternetServicesEmail(), "Плейсхолдер для email некорректен");
@@ -99,7 +117,7 @@ public class MtsTests {
         assertEquals("Сумма", mtsHomePage.getPlaceholderForInstallmentPlanAmount(), "Плейсхолдер для суммы некорректен");
         assertEquals("E-mail для отправки чека", mtsHomePage.getPlaceholderForInstallmentPlanEmail(), "Плейсхолдер для email некорректен");
         mtsHomePage.selectDebtPaymentForm();
-        assertEquals("Номер счета на 2073", mtsHomePage.getPlaceholderForHomeInternetAmount(), "Плейсхолдер для номера договора некорректен");
+        assertEquals("Номер счета на 2073", mtsHomePage.getPlaceholderForDebtPaymentContract(), "Плейсхолдер для номера договора некорректен");
         assertEquals("Сумма", mtsHomePage.getPlaceholderForDebtPaymentAmount(), "Плейсхолдер для суммы некорректен");
         assertEquals("E-mail для отправки чека", mtsHomePage.getPlaceholderForDebtPaymentEmail(), "Плейсхолдер для email некорректен");
     }
