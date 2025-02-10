@@ -117,7 +117,7 @@ public class MtsTests {
         assertEquals("Сумма", mtsHomePage.getPlaceholderForInstallmentPlanAmount(), "Плейсхолдер для суммы некорректен");
         assertEquals("E-mail для отправки чека", mtsHomePage.getPlaceholderForInstallmentPlanEmail(), "Плейсхолдер для email некорректен");
         mtsHomePage.selectDebtPaymentForm();
-        assertEquals("Номер счета на 2073", mtsHomePage.getPlaceholderForDebtPaymentContract(), "Плейсхолдер для номера договора некорректен");
+        assertEquals("Номер счета на 2073", mtsHomePage.getPlaceholderForDebtPaymentContract(), "Плейсхолдер для номера некорректен");
         assertEquals("Сумма", mtsHomePage.getPlaceholderForDebtPaymentAmount(), "Плейсхолдер для суммы некорректен");
         assertEquals("E-mail для отправки чека", mtsHomePage.getPlaceholderForDebtPaymentEmail(), "Плейсхолдер для email некорректен");
     }
