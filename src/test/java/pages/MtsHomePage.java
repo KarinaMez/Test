@@ -32,7 +32,7 @@ public class MtsHomePage {
     // Локаторы для элементов, появляющихся после нажатия кнопки "Продолжить"
     private final By displayedPhoneNumber = By.xpath("//div[@class='pay-description__text']/span[contains(text(), 'Оплата: Услуги связи')]");
     private final By displayedAmount = By.xpath("//span[contains(text(), '10.00 BYN')]");
-    private final By paymentButton = By.xpath("//div[2]/span");
+    private final By paymentButton = By.cssSelector("button[type='submit']");
 
     // Локаторы для полей формы "Услуги связи"
     private final By commServicesPhoneField = By.xpath("//input[@id='connection-phone']");
@@ -154,10 +154,6 @@ public class MtsHomePage {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(displayedAmount)).getText();
     }
 
-    @Step("Получение текста кнопки оплаты")
-    public String getPaymentButtonText() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(paymentButton)).getText();
-    }
 
     @Step("Получение плейсхолдера для поля")
     private String getPlaceholderForField(By fieldLocator) {
@@ -247,7 +243,7 @@ public class MtsHomePage {
         WebElement option = wait.until(ExpectedConditions.elementToBeClickable(debtPaymentOption));
         option.click();
     }
-    @Step("Получение текста метки для номера карты")
+    @Step("Получение текста  для номера карты")
     public String getCardNumberLabelText() {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(cardNumberLabel)).getText();
     }
